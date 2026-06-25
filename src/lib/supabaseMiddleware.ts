@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAllowedEmail } from "@/lib/access";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -36,15 +37,27 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname === "/login";
+  const isLogin = pathname === "/login";
+  const isNoAccess = pathname === "/not-authorised";
+  const isSignout = pathname.startsWith("/auth/");
+  const isPublic = isLogin || isNoAccess || isSignout;
 
-  if (!user && !isAuthRoute) {
+  // Not signed in -> login (except on public routes).
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthRoute) {
+  // Signed in but not on the allowlist -> no-access page (keep signout reachable).
+  if (user && !isAllowedEmail(user.email) && !isNoAccess && !isSignout) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/not-authorised";
+    return NextResponse.redirect(url);
+  }
+
+  // Signed in + allowed, sitting on /login -> send to the matrix.
+  if (user && isAllowedEmail(user.email) && isLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);

@@ -28,14 +28,22 @@ export default function AppHeader({
             Fortuna Civils — Register of Competency
           </h1>
         </div>
-        <form action="/auth/signout" method="post">
-          <button
-            type="submit"
+        <div className="flex items-center gap-2">
+          <Link
+            href="/account"
             className="rounded border border-ivory/30 px-3 py-1.5 text-xs font-medium text-ivory/90 transition hover:bg-ivory/10"
           >
-            Log out
-          </button>
-        </form>
+            Account
+          </Link>
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              className="rounded border border-ivory/30 px-3 py-1.5 text-xs font-medium text-ivory/90 transition hover:bg-ivory/10"
+            >
+              Log out
+            </button>
+          </form>
+        </div>
       </div>
       <div className="h-px w-full bg-brass" />
       <nav className="mx-auto flex max-w-[1600px] gap-1 px-6">

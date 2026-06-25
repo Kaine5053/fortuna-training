@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getMatrixData } from "@/lib/matrixData";
 import { computeRoleGaps } from "@/lib/roleGaps";
+import { isAllowedEmail } from "@/lib/access";
 import { daysUntil } from "@/lib/types";
 import AppHeader from "@/components/AppHeader";
 
@@ -15,6 +16,7 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+  if (!isAllowedEmail(user.email)) redirect("/not-authorised");
 
   // Nav badge = 90-day count (brief): active dated tickets that are lapsed or
   // expiring within 90 days. (The cell amber threshold is 6 months; this badge is 90d.)
