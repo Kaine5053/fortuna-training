@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1c1a17;
+  --ivory: #f6f3ec;
+  --paper: #fffefb;
+  --rule: #cfc8ba;
+  --brass: #9a7b3f;
+}
+
+html, body {
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+/* Thin ledger scrollbars for the grid */
+.ledger-scroll::-webkit-scrollbar { height: 10px; width: 10px; }
+.ledger-scroll::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 6px; }
+.ledger-scroll::-webkit-scrollbar-track { background: transparent; }
