@@ -243,7 +243,7 @@ open queries, cards entered last week, reads that failed, and the agent's cost f
 view's "Email this list" button sends the current list to Kaine on demand.
 
 Messages are sent through Microsoft Graph `sendMail` from a dedicated mailbox
-(`training@fortunacivilsltd.co.uk`, to be created by Kaine; owed item) so replies are readable by the
+(`support@fortunacivils.co.uk`, to be created by Kaine; owed item) so replies are readable by the
 `ingest-email` function without touching Kaine's personal inbox.
 
 ## 8. Front end
@@ -317,7 +317,7 @@ blocking at allocation (belongs to the main app, reads this API). Portal design 
 
 ## 13. Owed by Kaine (never block the build)
 
-1. Create `training@fortunacivilsltd.co.uk` and an Azure app registration with `Mail.Send`,
+1. Create `support@fortunacivils.co.uk` and an Azure app registration with `Mail.Send`,
    `Mail.Read`, `Files.Read.All` application permissions, admin consent.
 2. Netlify: add `training-matrix` CNAME at the DNS provider.
 3. Website: add the "Staff login" link.
