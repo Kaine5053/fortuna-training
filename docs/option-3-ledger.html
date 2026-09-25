@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortuna Civils — Register of Competency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1c1a17;--ink-soft:#54504a;--ivory:#f6f3ec;--paper:#fffefb;--line:#e2ddd2;--rule:#cfc8ba;
+    --brass:#9a7b3f;--brass-soft:#efe7d6;
+    --white:#fffefb;--grey:#d8d2c6;--amber:#c98a35;--red:#a83a2c;--perm:#e9e3d6;
+    --serif:"Fraunces",Georgia,serif;--sans:"Inter",-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--ivory);color:var(--ink);font-size:13px;-webkit-font-smoothing:antialiased}
+
+  header{background:var(--ink);color:var(--ivory);padding:0}
+  .head-in{padding:20px 30px;display:flex;align-items:center;gap:20px}
+  .crest{font-family:var(--serif);font-weight:600;font-size:20px;letter-spacing:.01em}
+  .crest small{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:#a9a195;margin-top:3px;font-weight:500}
+  .head-in .sp{flex:1}
+  .btn{font:inherit;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.02em;border:1px solid rgba(246,243,236,.25);background:transparent;color:var(--ivory);padding:9px 16px;border-radius:2px;cursor:pointer;transition:.15s}
+  .btn:hover{background:rgba(246,243,236,.1)}
+  .btn.brass{background:var(--brass);border-color:var(--brass);color:#fff}
+  .btn.brass:hover{background:#876a32}
+  .btn.dk{color:var(--ink);border-color:var(--rule);background:var(--paper)}
+  .btn.dk:hover{background:#fff;border-color:var(--brass)}
+  .ribbon{height:3px;background:var(--brass)}
+
+  .controls{padding:18px 30px 0;display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap}
+  .controls .title-block h1{font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:-.01em}
+  .controls .title-block p{color:var(--ink-soft);font-size:12px;margin-top:3px}
+  .sheettabs{display:flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--paper);align-self:flex-end}
+  .sheettabs button{font:inherit;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.03em;padding:9px 16px;border:none;border-right:1px solid var(--rule);background:transparent;color:var(--ink-soft);cursor:pointer}
+  .sheettabs button:last-child{border-right:none}
+  .sheettabs button.on{background:var(--ink);color:var(--ivory)}
+  .sheettabs button span{display:inline-block;min-width:18px;margin-left:5px;font-family:var(--serif);font-size:11px;opacity:.8}
+  .rebtn{font:inherit;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--brass);background:none;border:1px solid var(--rule);border-radius:2px;padding:4px 10px;cursor:pointer;margin-left:auto}
+  .rebtn:hover{background:var(--ivory);border-color:var(--brass)}
+  .controls .sp{flex:1}
+  .search{position:relative;min-width:230px}
+  .search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--rule);border-radius:2px;font:inherit;background:var(--paper)}
+  .search svg{position:absolute;left:10px;top:10px;opacity:.4}
+  .filters{display:flex;gap:0;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--paper)}
+  .filters button{font:inherit;font-size:11px;font-weight:600;letter-spacing:.04em;padding:9px 14px;border:none;border-right:1px solid var(--rule);background:transparent;color:var(--ink-soft);cursor:pointer}
+  .filters button:last-child{border-right:none}
+  .filters button.on{background:var(--ink);color:var(--ivory)}
+
+  .keyline{display:flex;align-items:center;gap:22px;padding:14px 30px 16px;font-size:11px;color:var(--ink-soft);letter-spacing:.02em}
+  .keyline .k{display:flex;align-items:center;gap:7px}
+  .keyline i{width:13px;height:13px;border:1px solid rgba(0,0,0,.14);display:inline-block}
+
+  .frame{margin:0 30px 30px;border:1px solid var(--rule);background:var(--paper);overflow:auto;max-height:calc(100vh - 230px)}
+  table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%}
+  thead .grp th{position:sticky;top:0;z-index:30;background:#2b2823;color:#d8c9a8;font-family:var(--sans);font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:8px 12px;text-align:left;border-right:1px solid #423d35;white-space:nowrap}
+  thead .grp th.corner{left:0;z-index:34;background:#221f1b}
+  thead .cmp th{position:sticky;top:31px;z-index:28;background:#37322b;color:#ece4d4;font-size:11px;font-weight:500;height:124px;vertical-align:bottom;padding:0;border-right:1px solid #2b2823;white-space:nowrap}
+  thead .cmp th .v{writing-mode:vertical-rl;transform:rotate(180deg);padding:11px 0;margin:0 auto;letter-spacing:.02em}
+  thead .cmp th.nameh{position:sticky;left:0;top:31px;z-index:33;background:#221f1b;writing-mode:horizontal-tb;color:var(--ivory);font-family:var(--serif);font-size:13px;font-weight:500;letter-spacing:.04em;vertical-align:middle;padding:12px 16px;text-align:left;min-width:210px}
+
+  tbody td.name{position:sticky;left:0;z-index:20;background:var(--paper);padding:0 16px;min-width:210px;border-right:1px solid var(--rule);border-bottom:1px solid var(--line)}
+  tbody td.name .ri{display:flex;align-items:center;gap:10px;height:38px}
+  tbody td.name .rowsel{width:15px;height:15px;accent-color:var(--brass);cursor:pointer;flex:0 0 auto}
+  .selall{display:flex;align-items:center;gap:8px;cursor:pointer}
+  .selall input{width:14px;height:14px;accent-color:var(--brass)}
+  tbody td.name .no{font-family:var(--serif);font-size:11px;color:var(--brass);width:22px;text-align:right}
+  tbody td.name .nm{font-weight:600;font-size:13px;cursor:pointer;border-bottom:1px solid transparent}
+  tbody td.name .ri:hover .nm{border-bottom-color:var(--brass);color:var(--brass)}
+  tbody td.name .rl{font-size:10px;color:#928c82}
+  tbody tr:nth-child(even) td.name{background:#faf7f0}
+  tbody td.c{width:38px;min-width:38px;height:38px;text-align:center;cursor:pointer;border-right:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;transition:.1s}
+  tbody td.c:hover{outline:2px solid var(--brass);outline-offset:-2px;z-index:5}
+  .v-white{background:var(--white)}.v-grey{background:var(--grey)}.v-amber{background:var(--amber)}.v-red{background:var(--red)}.v-perm{background:var(--perm)}
+  td.c .m{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;color:rgba(0,0,0,.4)}
+  td.c.v-amber .m,td.c.v-red .m{color:rgba(255,255,255,.85)}
+  .grpsep{border-right:1px solid var(--rule)!important}
+
+  .lb{position:fixed;inset:0;background:rgba(28,26,23,.74);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+  .lb.show{display:flex}
+  .lb-card{background:var(--paper);border-radius:3px;max-width:720px;width:100%;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4);border-top:3px solid var(--brass)}
+  .lb-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .lb-head h3{font-family:var(--serif);font-size:17px;font-weight:500}.lb-head .meta{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .lb-head .x{margin-left:auto;border:1px solid var(--rule);background:transparent;width:30px;height:30px;border-radius:2px;cursor:pointer}
+  .lb-body{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .cert{border:1px solid var(--rule);background:var(--ivory)}
+  .cert .img{aspect-ratio:1.55;background:repeating-linear-gradient(45deg,#e8e2d5,#e8e2d5 12px,#f1ece0 12px,#f1ece0 24px);display:flex;align-items:center;justify-content:center;font-size:10px;color:#a39c8e;letter-spacing:.16em}
+  .cert .cap{padding:10px 13px;font-size:11px;font-weight:600;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .stamp{font-family:var(--serif);font-size:10px;font-weight:600;letter-spacing:.06em;padding:3px 9px;border:1px solid;border-radius:2px}
+  .stamp.ok{color:#3c6b4a;border-color:#bcd4c2}.stamp.amber{color:#9a5a1e;border-color:#e3c39a}.stamp.red{color:#a02b20;border-color:#e0b3ab}
+
+  .ingest-step{padding:18px 22px;border-bottom:1px solid var(--line)}
+  .ingest-step h4{font-family:var(--serif);font-size:13px;font-weight:600;margin-bottom:10px}
+  .drop{border:1px dashed var(--rule);padding:26px;text-align:center;color:#928c82;background:var(--ivory)}
+  .review-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .review-row:last-child{border:none}
+  .thumb{width:74px;height:48px;background:repeating-linear-gradient(45deg,#e8e2d5,#e8e2d5 8px,#f1ece0 8px,#f1ece0 16px);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:9px;color:#a39c8e}
+  .review-row select,.review-row input{font:inherit;font-size:12px;padding:6px 9px;border:1px solid var(--rule);border-radius:2px;background:var(--paper)}
+  .review-row .grow{flex:1}
+  .conf{font-family:var(--serif);font-size:11px;font-weight:600;padding:3px 9px;border:1px solid}.conf.hi{color:#3c6b4a;border-color:#bcd4c2}.conf.lo{color:#9a5a1e;border-color:#e3c39a}
+  .foot{padding:16px 22px;display:flex;gap:10px;justify-content:flex-end;background:var(--ivory)}
+  .note{font-size:11px;color:#928c82;padding:0 22px 16px}
+  .lb .btn{color:var(--ink);border-color:var(--rule)}.lb .btn:hover{background:var(--ivory)}
+
+  /* arrange panel */
+  .arrange-body{padding:18px 22px;max-height:62vh;overflow:auto}
+  .arr-sec{border:1px solid var(--rule);background:var(--paper);margin-bottom:12px}
+  .arr-sec.dragging{opacity:.4}
+  .arr-sec.drop-before{box-shadow:-3px 0 0 var(--brass)}
+  .arr-sec.drop-after{box-shadow:3px 0 0 var(--brass)}
+  .arr-sechead{display:flex;align-items:center;gap:10px;padding:11px 14px;background:#2b2823;color:var(--ivory);cursor:grab}
+  .arr-sechead:active{cursor:grabbing}
+  .arr-sechead .grip{font-size:13px;color:#9a8e76;letter-spacing:-2px}
+  .arr-sechead .nm{font-family:var(--serif);font-size:14px;font-weight:500;flex:1}
+  .arr-sechead .cnt{font-size:11px;color:#a9a195}
+  .arr-sechead .del{background:none;border:1px solid rgba(246,243,236,.25);color:#cfc8ba;border-radius:2px;font-size:11px;padding:3px 9px;cursor:pointer}
+  .arr-sechead .del:hover{background:rgba(168,58,44,.3);border-color:#a83a2c}
+  .arr-chips{padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;min-height:48px;align-content:flex-start}
+  .arr-chips.dropzone{background:var(--brass-soft);outline:1px dashed var(--brass);outline-offset:-4px}
+  .arr-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;background:var(--ivory);border:1px solid var(--rule);border-radius:2px;font-size:12px;font-weight:500;cursor:grab}
+  .arr-chip:active{cursor:grabbing}
+  .arr-chip .grip{color:#b3ac9e;font-size:11px;letter-spacing:-2px}
+  .arr-chip.dragging{opacity:.35}
+  .arr-chip.drop-before{box-shadow:-3px 0 0 var(--brass)}
+  .arr-chip.drop-after{box-shadow:3px 0 0 var(--brass)}
+  .arr-chip .tag{font-family:var(--serif);font-size:9px;padding:1px 5px;border:1px solid var(--rule);color:var(--ink-soft)}
+  .arr-empty{font-size:12px;color:#928c82;font-style:italic;padding:4px}
+
+  /* form fields */
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+  .fld input,.fld select{width:100%;font:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--rule);border-radius:2px;background:var(--paper)}
+  .fld-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .body-pad{padding:22px}
+  /* edit panel: operative's ticket list */
+  .edit-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+  .edit-head .av{width:46px;height:46px;border-radius:3px;background:var(--brass);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:17px;font-weight:600}
+  .edit-head h3{font-family:var(--serif);font-size:18px;font-weight:500}
+  .edit-head .sub{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .ticket-list{max-height:50vh;overflow:auto;padding:8px 22px}
+  .tk{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .tk:last-child{border:none}
+  .tk .sw{width:14px;height:14px;border:1px solid rgba(0,0,0,.15);flex:0 0 auto}
+  .tk .tkn{flex:1;font-size:13px;font-weight:500}
+  .tk .tke{font-size:11px;color:var(--ink-soft);width:90px;text-align:right}
+  .tk .edit{font:inherit;font-size:11px;font-weight:600;color:var(--brass);background:none;border:none;cursor:pointer;letter-spacing:.04em}
+  .sub-form{background:var(--ivory);border:1px solid var(--line);padding:16px;margin:8px 0}
+  .tag{font-family:var(--serif);font-size:11px;padding:2px 8px;border:1px solid var(--rule)}
+
+  /* main nav */
+  .mainnav{display:flex;gap:0;padding:0 30px;background:var(--ink)}
+  .mainnav button{font:inherit;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.04em;color:#a9a195;background:none;border:none;padding:12px 18px;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:8px}
+  .mainnav button:hover{color:var(--ivory)}
+  .mainnav button.on{color:var(--ivory);border-bottom-color:var(--brass)}
+  .navbadge{font-family:var(--serif);font-size:11px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--red);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+  .navbadge.zero{background:#4a463f;color:#c9c2b4}
+  .navbadge.amber{background:var(--amber)}
+
+  /* window tabs (expiring) */
+  .wintabs{display:flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--paper);align-self:flex-end}
+  .wintabs button{font:inherit;font-size:12px;font-weight:600;padding:9px 14px;border:none;border-right:1px solid var(--rule);background:transparent;color:var(--ink-soft);cursor:pointer}
+  .wintabs button:last-child{border-right:none}.wintabs button.on{background:var(--ink);color:var(--ivory)}
+
+  .panel{margin:0 30px 30px;border:1px solid var(--rule);background:var(--paper)}
+  .exp-summary{display:flex;gap:12px;padding:0 30px 16px;flex-wrap:wrap}
+  .scard{flex:1;min-width:130px;border:1px solid var(--rule);background:var(--paper);padding:14px 16px}
+  .scard .n{font-family:var(--serif);font-size:26px;font-weight:500;line-height:1}
+  .scard .l{font-size:11px;color:var(--ink-soft);margin-top:6px;letter-spacing:.03em}
+  .scard.red .n{color:var(--red)}.scard.amber .n{color:var(--amber)}.scard.ok .n{color:#3c6b4a}
+
+  /* expiring list rows */
+  .erow{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .erow:last-child{border:none}
+  .erow .sw{width:12px;height:12px;flex:0 0 auto;border:1px solid rgba(0,0,0,.15)}
+  .erow .who{font-weight:600;font-size:13px;width:160px;cursor:pointer}
+  .erow .who:hover{color:var(--brass)}
+  .erow .role{font-size:11px;color:#928c82;width:110px}
+  .erow .comp{flex:1;font-size:13px}
+  .erow .days{font-size:12px;font-weight:600;width:120px;text-align:right}
+  .erow .days.red{color:var(--red)}.erow .days.amber{color:var(--amber)}
+  .erow .act{font:inherit;font-size:11px;font-weight:600;color:var(--brass);background:none;border:1px solid var(--rule);border-radius:2px;padding:5px 11px;cursor:pointer;margin-left:6px}
+  .erow .act:hover{background:var(--ivory);border-color:var(--brass)}
+  .emptyline{padding:30px;text-align:center;color:#928c82;font-style:italic}
+
+  /* role gaps */
+  .grow-card{border-bottom:1px solid var(--line);padding:14px 18px}
+  .grow-card:last-child{border:none}
+  .grow-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .grow-head .who{font-weight:600;font-size:14px;cursor:pointer}.grow-head .who:hover{color:var(--brass)}
+  .grow-head .role{font-size:11px;color:#928c82;border:1px solid var(--rule);padding:2px 8px}
+  .grow-head .ok{margin-left:auto;font-size:12px;font-weight:600;color:#3c6b4a}
+  .grow-head .bad{margin-left:auto;font-size:12px;font-weight:600;color:var(--red)}
+  .gap-pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .gap-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:2px;border:1px solid}
+  .gap-pill.miss{background:#f6ece9;border-color:#e0b3ab;color:#a02b20}
+  .gap-pill.lapsed{background:#fbe7d4;border-color:#e3c39a;color:#9a5a1e}
+  /* role editor checklist */
+  .reqrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .reqrow:last-child{border:none}.reqrow input{width:15px;height:15px;accent-color:var(--brass)}
+  .reqsec{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;padding:12px 0 4px}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-in">
+    <div class="crest">Fortuna Civils<small>Register of Competency</small></div>
+    <div class="sp"></div>
+    <button class="btn" onclick="openIngest()">Ingest training files</button>
+    <button class="btn" id="archiveBtn" onclick="archiveSelected()">Archive selected — 0</button>
+    <button class="btn" id="reactivateBtn" style="display:none" onclick="reactivateSelected()">Reactivate selected — 0</button>
+    <button class="btn brass" id="exp" onclick="exportPDF()">Export record — 0 selected</button>
+  </div>
+  <div class="ribbon"></div>
+  <nav class="mainnav">
+    <button id="navMatrix" class="on" onclick="setView('matrix')">Matrix</button>
+    <button id="navExpiring" onclick="setView('expiring')">Expiring <span class="navbadge" id="navExpBadge">0</span></button>
+    <button id="navRoles" onclick="setView('roles')">Role gaps <span class="navbadge" id="navRoleBadge">0</span></button>
+  </nav>
+</header>
+
+<div id="view-matrix">
+<div class="controls">
+  <div class="title-block">
+    <h1 id="sheetTitle">Operative Competency Register</h1>
+    <p id="sheetSub">Active operatives</p>
+  </div>
+  <div class="sheettabs">
+    <button id="tabActive" class="on" onclick="switchSheet('active')">Active <span id="cntActive">0</span></button>
+    <button id="tabArchive" onclick="switchSheet('archive')">Archive <span id="cntArchive">0</span></button>
+  </div>
+  <div class="sp"></div>
+  <button class="btn dk" id="addOpBtn" onclick="openAddOp()">＋ Add operative</button>
+  <button class="btn dk" id="addCompBtn" onclick="openAddComp()">＋ Add competency</button>
+  <button class="btn dk" id="addSecBtn" onclick="openAddSec()">＋ Add section</button>
+  <button class="btn dk" id="arrangeBtn" onclick="openArrange()">⇄ Arrange</button>
+  <button class="btn dk" id="renewBtn" onclick="bulkRenew()">↻ Renew selected</button>
+  <div class="search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+    <input id="q" placeholder="Search the register…" oninput="render()">
+  </div>
+  <div class="filters" id="filters"></div>
+</div>
+
+<div class="keyline">
+  <span style="font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:10px">Key</span>
+  <span class="k"><i style="background:var(--white)"></i>In date — over 6 months</span>
+  <span class="k"><i style="background:var(--amber)"></i>Expires within 6 months</span>
+  <span class="k"><i style="background:var(--red)"></i>Lapsed</span>
+  <span class="k"><i style="background:var(--grey)"></i>Not held</span>
+  <span class="k"><i style="background:var(--perm)"></i>No expiry</span>
+</div>
+
+<div class="frame"><table id="grid"></table></div>
+</div>
+
+<!-- EXPIRING DASHBOARD -->
+<div id="view-expiring" style="display:none">
+  <div class="controls">
+    <div class="title-block"><h1>Expiring &amp; lapsed</h1><p>Active operatives — what needs chasing</p></div>
+    <div class="sp"></div>
+    <div class="wintabs" id="winTabs">
+      <button data-w="30" onclick="setWindow(30)">30 days</button>
+      <button data-w="60" onclick="setWindow(60)">60 days</button>
+      <button data-w="90" class="on" onclick="setWindow(90)">90 days</button>
+      <button data-w="0" onclick="setWindow(0)">Lapsed only</button>
+    </div>
+    <button class="btn dk" onclick="alert('Backend feature: in the Supabase build this schedules an email digest of everything in this view. Flagged in the build plan.')">✉ Email this list</button>
+  </div>
+  <div class="exp-summary" id="expSummary"></div>
+  <div class="panel"><div id="expList"></div></div>
+</div>
+
+<!-- ROLE GAPS -->
+<div id="view-roles" style="display:none">
+  <div class="controls">
+    <div class="title-block"><h1>Role requirements &amp; gaps</h1><p>Define what each role must hold; operatives missing any are flagged</p></div>
+    <div class="sp"></div>
+    <button class="btn dk" onclick="openRoleEditor()">⚙ Edit role requirements</button>
+  </div>
+  <div class="panel"><div id="roleGaps"></div></div>
+</div>
+
+<div class="lb" id="lb" onclick="if(event.target.id==='lb')closeLb()">
+  <div class="lb-card">
+    <div class="lb-head"><div><h3 id="lbT">—</h3><div class="meta" id="lbM">—</div></div><button class="x" onclick="closeLb()">✕</button></div>
+    <div class="lb-body">
+      <div class="cert"><div class="img">CARD · FRONT</div><div class="cap">Front face <span class="stamp ok" id="lbS">In date</span></div></div>
+      <div class="cert"><div class="img">CARD · REVERSE</div><div class="cap">Reverse — expiry <span id="lbE">—</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="lb" id="ingest" onclick="if(event.target.id==='ingest')closeIngest()">
+  <div class="lb-card" style="max-width:660px">
+    <div class="lb-head"><div><h3>Ingest training files</h3><div class="meta">Upload, read, review, then enter to the register</div></div><button class="x" onclick="closeIngest()">✕</button></div>
+    <div class="ingest-step"><h4>1 — Place the files</h4><div class="drop">Drag PDFs &amp; JPEGs here. Photographs holding several cards are separated into front &amp; reverse.</div></div>
+    <div class="ingest-step"><h4>2 — Review before entry (3)</h4>
+      <div class="review-row"><div class="thumb">img_4471</div><select class="grow"><option>Connor Whitfield (92%)</option><option>+ New operative</option></select><select><option>CPCS 360 (≥10t)</option></select><input type="date" value="2027-03-14" style="width:135px"><span class="conf hi">92%</span></div>
+      <div class="review-row"><div class="thumb">img_4472</div><select class="grow"><option>Unmatched</option><option>+ New operative</option></select><select><option>NRSWA Operative</option></select><input type="date" value="2026-09-02" style="width:135px"><span class="conf lo">54%</span></div>
+      <div class="review-row"><div class="thumb">scan_88</div><select class="grow"><option>Priya Anand (88%)</option></select><select><option>First Aid at Work</option></select><input type="date" value="2025-11-20" style="width:135px"><span class="conf hi">88%</span></div>
+    </div>
+    <div class="note">Anything below confidence is held back for you to assign — never entered automatically.</div>
+    <div class="foot"><button class="btn" onclick="closeIngest()">Cancel</button><button class="btn brass" onclick="alert('Mock: enters the reviewed records into Supabase.')">Enter 3 to register</button></div>
+  </div>
+</div>
+
+<!-- Add operative -->
+<div class="lb" id="addOp" onclick="if(event.target.id==='addOp')closeM('addOp')">
+  <div class="lb-card" style="max-width:460px">
+    <div class="lb-head"><div><h3>Add operative</h3><div class="meta">Creates a new row in the register</div></div><button class="x" onclick="closeM('addOp')">✕</button></div>
+    <div class="body-pad">
+      <div class="fld"><label>Full name</label><input id="opName" placeholder="e.g. Daniel Hargreaves"></div>
+      <div class="fld"><label>Role / trade</label>
+        <select id="opRole" onchange="roleSelectChanged(this)"></select></div>
+      <div class="note" style="padding:0;margin-top:4px">Tickets can be added straight after, or later via the operative's name.</div>
+    </div>
+    <div class="foot"><button class="btn" onclick="closeM('addOp')">Cancel</button><button class="btn brass" onclick="saveOp()">Add to register</button></div>
+  </div>
+</div>
+
+<!-- Add competency -->
+<div class="lb" id="addComp" onclick="if(event.target.id==='addComp')closeM('addComp')">
+  <div class="lb-card" style="max-width:460px">
+    <div class="lb-head"><div><h3>Add competency</h3><div class="meta">Creates a new column under a chosen section</div></div><button class="x" onclick="closeM('addComp')">✕</button></div>
+    <div class="body-pad">
+      <div class="fld"><label>Competency name</label><input id="compName" placeholder="e.g. Cable Avoidance (CAT &amp; Genny)"></div>
+      <div class="fld"><label>Section</label><select id="compSec"></select></div>
+      <div class="fld"><label>Expiry behaviour</label>
+        <select id="compPerm"><option value="exp">Expires — track a date</option><option value="perm">No expiry (permanent white)</option></select></div>
+      <div class="note" style="padding:0;margin-top:4px">Every operative starts as “not held” (grey) for the new column until a ticket is entered.</div>
+    </div>
+    <div class="foot"><button class="btn" onclick="closeM('addComp')">Cancel</button><button class="btn brass" onclick="saveComp()">Add column</button></div>
+  </div>
+</div>
+
+<!-- Edit operative / tickets -->
+<div class="lb" id="editOp" onclick="if(event.target.id==='editOp')closeM('editOp')">
+  <div class="lb-card" style="max-width:560px">
+    <div class="edit-head"><div class="av" id="edAv">–</div><div style="flex:1"><h3 id="edName">–</h3><div class="sub" id="edSub" style="display:flex;align-items:center;gap:8px;margin-top:5px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)">Role</span><select id="edRole" onchange="changeOpRole(this)" style="font:inherit;font-size:12px;padding:5px 8px;border:1px solid var(--rule);border-radius:2px;background:var(--paper)"></select><span id="edCount" style="color:var(--ink-soft)"></span></div></div><button class="x" onclick="closeM('editOp')">✕</button></div>
+    <div class="ticket-list" id="edList"></div>
+    <div class="foot"><button class="btn" onclick="closeM('editOp')">Done</button></div>
+  </div>
+</div>
+
+<!-- Add section -->
+<div class="lb" id="addSec" onclick="if(event.target.id==='addSec')closeM('addSec')">
+  <div class="lb-card" style="max-width:440px">
+    <div class="lb-head"><div><h3>Add section</h3><div class="meta">Creates a new header group on the matrix</div></div><button class="x" onclick="closeM('addSec')">✕</button></div>
+    <div class="body-pad">
+      <div class="fld"><label>Section name</label><input id="secName" placeholder="e.g. Lifting Operations"></div>
+      <div class="note" style="padding:0;margin-top:4px">Starts empty. Add competencies into it, or drag existing columns across in Arrange.</div>
+    </div>
+    <div class="foot"><button class="btn" onclick="closeM('addSec')">Cancel</button><button class="btn brass" onclick="saveSec()">Add section</button></div>
+  </div>
+</div>
+
+<!-- Arrange (drag & drop) -->
+<div class="lb" id="arrange" onclick="if(event.target.id==='arrange')closeM('arrange')">
+  <div class="lb-card" style="max-width:740px">
+    <div class="lb-head"><div><h3>Arrange sections &amp; columns</h3><div class="meta">Drag a section to reorder groups. Drag a competency to reorder it or drop it into another section.</div></div><button class="x" onclick="closeArrange()">✕</button></div>
+    <div class="arrange-body" id="arrangeBody"></div>
+    <div class="foot"><button class="btn brass" onclick="closeArrange()">Done</button></div>
+  </div>
+</div>
+
+<!-- Role requirements editor -->
+<div class="lb" id="roleEditor" onclick="if(event.target.id==='roleEditor')closeM('roleEditor')">
+  <div class="lb-card" style="max-width:560px">
+    <div class="lb-head"><div><h3>Role requirements</h3><div class="meta">Tick the competencies each role must hold. Operatives missing any are flagged on Role gaps.</div></div><button class="x" onclick="closeM('roleEditor')">✕</button></div>
+    <div class="body-pad" style="padding-top:14px">
+      <div class="fld"><label>Role</label><select id="reRole" onchange="reRoleChanged(this)"></select></div>
+      <div id="reReqs" style="max-height:46vh;overflow:auto;border:1px solid var(--line);padding:4px 14px"></div>
+    </div>
+    <div class="foot"><button class="btn brass" onclick="closeM('roleEditor');renderRoles();updateBadges()">Done</button></div>
+  </div>
+</div>
+
+<!-- Renew ticket(s) -->
+<div class="lb" id="renew" onclick="if(event.target.id==='renew')closeM('renew')">
+  <div class="lb-card" style="max-width:460px">
+    <div class="lb-head"><div><h3 id="rnTitle">Renew ticket</h3><div class="meta" id="rnMeta">—</div></div><button class="x" onclick="closeM('renew')">✕</button></div>
+    <div class="body-pad">
+      <div class="fld"><label>New expiry date</label><input type="date" id="rnDate"></div>
+      <div class="fld"><label>Replace card images (front &amp; reverse)</label><input type="file" multiple></div>
+      <div class="note" style="padding:0;margin-top:4px" id="rnNote">Bumps the expiry and swaps the image in one go.</div>
+    </div>
+    <div class="foot"><button class="btn" onclick="closeM('renew')">Cancel</button><button class="btn brass" id="rnSave" onclick="saveRenew()">Renew</button></div>
+  </div>
+</div>
+
+<script>
+let SECTIONS=[
+  {name:"Health & Safety",comps:["CSCS Card","CITB HS&E Test","First Aid at Work","Asbestos Awareness","Manual Handling","COSHH","Fire Awareness","Safety-Critical Medical"]},
+  {name:"Plant — CPCS / NPORS",comps:["360 Excavator <10t","360 Excavator ≥10t","Fwd Tipping Dumper","Ride-on Roller","Telehandler","Slinger/Signaller","Plant Banksman"]},
+  {name:"Streetworks",comps:["NRSWA Operative","NRSWA Supervisor"]},
+  {name:"Specialist",comps:["Confined Space","Temp Works Coord","SSSTS","SMSTS","Abrasive Wheels","Face Fit"]}
+];
+const PERM=new Set(["CSCS Card","CITB HS&E Test","Asbestos Awareness","Manual Handling","COSHH","Fire Awareness","Abrasive Wheels"]);
+const FN=["Connor","Priya","Lewis","Tomasz","Darren","Mehmet","Sean","Ryan","Aron","Joel","Kane","Grant","Owen","Vikram","Dale","Reece","Liam","Eddie","Marcus","Paul","Nathan","Wesley","Cole","Hardeep","Stuart","Gary","Ben","Toby","Karl","Frank","Dean","Scott","Alfie","Jordan","Curtis","Glen","Ross","Neil","Adam","Ian","Carl","Brett","Shaun","Wayne","Luke","Mark","Phil","Joe","Rob","Tom"];
+const LN=["Whitfield","Anand","Marsh","Kowal","Hobbs","Yilmaz","Doherty","Beckett","Pavel","Frost","Ellison","Mowbray","Pryce","Nair","Hartley","Tindall","Foss","Strachan","Quinn","Brennan","Webb","Cross","Pike","Sandhu","Reid","Lomax","Cahill","Driscoll","Voss","Mercer","Boyd","Nash","Eames","Platt","Rhodes","Kemp","Dale","Forsyth","Best","Sloan","Vine","Tate","Lacey","Bly","Rooke","Sands","Pook","Vega","Ash","Lund"];
+const ROLES=["Operative","Gangerman","Machine Driver","Pipelayer","Banksman","Machine Driver","Operative","Operative"];
+function rng(s){return ()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff}}
+function allComps(){return SECTIONS.flatMap(s=>s.comps);}
+const ALL=allComps();
+let DATA=FN.map((f,i)=>{const r=rng(i*149+11);const name=f+" "+LN[i];const role=ROLES[i%ROLES.length];
+  const cells={};ALL.forEach(c=>{const v=r();
+    if(v<0.16){cells[c]={status:"grey"};return;}
+    if(PERM.has(c)){cells[c]={status:"perm",exp:null};
+      if(/cscs/i.test(c)){const types=['Labourer (Green)','Skilled Worker (Blue)','Supervisory (Gold)','Manager (Black)'];cells[c].cardType=types[Math.floor(r()*types.length)];}
+      return;}
+    const m=Math.floor((r()-0.25)*30);const d=new Date();d.setMonth(d.getMonth()+m);
+    let st="white";if(m<0)st="red";else if(m<6)st="amber";
+    cells[c]={status:st,exp:d.toISOString().slice(0,10)};});
+  return {name,role,cells,archived:false};});
+const MARK={white:"●",grey:"",amber:"▲",red:"✕",perm:"—"};
+
+// mutable role list (drives operative dropdowns + role profiles)
+let ROLE_LIST=[...new Set([...ROLES,"Pipelayer","Supervisor"])];
+// default mandatory competencies per role (editable)
+let ROLE_REQS={
+  "Operative":["CSCS Card","CITB HS&E Test","Manual Handling"],
+  "Gangerman":["CSCS Card","CITB HS&E Test","First Aid at Work","SSSTS","NRSWA Operative"],
+  "Machine Driver":["CSCS Card","CITB HS&E Test","360 Excavator ≥10t","Safety-Critical Medical"],
+  "Pipelayer":["CSCS Card","CITB HS&E Test","Confined Space","Manual Handling"],
+  "Banksman":["CSCS Card","CITB HS&E Test","Slinger/Signaller","Plant Banksman"]
+};
+ROLE_LIST.forEach(r=>{if(!ROLE_REQS[r])ROLE_REQS[r]=["CSCS Card","CITB HS&E Test"];});
+// add a role everywhere; returns the name or null if blank/dupe
+function addRole(name){
+  name=(name||'').trim();if(!name)return null;
+  if(!ROLE_LIST.includes(name)){ROLE_LIST.push(name);ROLE_REQS[name]=["CSCS Card","CITB HS&E Test"];}
+  return name;
+}
+function roleOptions(selected){return ROLE_LIST.map(r=>`<option ${r===selected?'selected':''}>${r}</option>`).join('')+`<option value="__add">＋ Add new role…</option>`;}
+
+// days until expiry (negative = lapsed). perm/grey return null.
+function daysLeft(cell){
+  if(!cell||!cell.exp||cell.status==='perm'||cell.status==='grey')return null;
+  return Math.ceil((new Date(cell.exp)-new Date())/(1000*60*60*24));
+}
+
+let activeSecs=new Set(SECTIONS.map(s=>s.name));
+const fb=document.getElementById('filters');
+function renderFilters(){
+  fb.innerHTML='';
+  SECTIONS.forEach(s=>{const b=document.createElement('button');b.textContent=s.name.split(' ')[0];b.dataset.s=s.name;
+    b.className=activeSecs.has(s.name)?'on':'';
+    b.onclick=()=>{b.classList.toggle('on');b.classList.contains('on')?activeSecs.add(s.name):activeSecs.delete(s.name);render();};
+    fb.appendChild(b);});
+}
+renderFilters();
+
+const SEL=new Set();
+let currentSheet='active';
+
+function visibleRows(){
+  const q=document.getElementById('q').value.toLowerCase();
+  return DATA.map((d,i)=>({d,i}))
+    .filter(x=>x.d.archived===(currentSheet==='archive'))
+    .filter(x=>x.d.name.toLowerCase().includes(q));
+}
+function updateButtons(){
+  const n=SEL.size;
+  document.getElementById('exp').textContent=`Export record — ${n} selected`;
+  document.getElementById('archiveBtn').textContent=`Archive selected — ${n}`;
+  document.getElementById('reactivateBtn').textContent=`Reactivate selected — ${n}`;
+  // select-all checkbox state reflects visible rows
+  const a=document.getElementById('selAll');
+  if(a){const vis=visibleRows().map(x=>x.i);const picked=vis.filter(i=>SEL.has(i)).length;
+    a.checked=vis.length>0&&picked===vis.length;
+    a.indeterminate=picked>0&&picked<vis.length;}
+}
+function toggleSel(i){SEL.has(i)?SEL.delete(i):SEL.add(i);updateButtons();}
+function toggleAll(on){
+  const vis=visibleRows().map(x=>x.i);
+  if(on)vis.forEach(i=>SEL.add(i));else vis.forEach(i=>SEL.delete(i));
+  updateButtons();render();
+}
+function switchSheet(s){
+  currentSheet=s;SEL.clear();
+  document.getElementById('tabActive').classList.toggle('on',s==='active');
+  document.getElementById('tabArchive').classList.toggle('on',s==='archive');
+  document.getElementById('sheetTitle').textContent=s==='active'?'Operative Competency Register':'Archived Operatives';
+  document.getElementById('sheetSub').textContent=s==='active'?'Active operatives':'Kept on file — not on the live register';
+  // toolbar buttons swap by sheet
+  document.getElementById('archiveBtn').style.display=s==='active'?'':'none';
+  document.getElementById('reactivateBtn').style.display=s==='archive'?'':'none';
+  document.getElementById('addOpBtn').style.display=s==='active'?'':'none';
+  document.getElementById('addCompBtn').style.display=s==='active'?'':'none';
+  document.getElementById('q').value='';
+  render();updateButtons();
+}
+function archiveSelected(){
+  if(SEL.size===0){alert('Tick the operatives you want to archive.');return;}
+  if(!confirm(`Archive ${SEL.size} operative${SEL.size>1?'s':''}? They move to the Archive sheet and keep all tickets and images. You can reactivate them any time.`))return;
+  SEL.forEach(i=>DATA[i].archived=true);SEL.clear();render();updateButtons();updateCounts();
+}
+function reactivateSelected(){
+  if(SEL.size===0){alert('Tick the operatives you want to reactivate.');return;}
+  SEL.forEach(i=>DATA[i].archived=false);SEL.clear();render();updateButtons();updateCounts();
+}
+function reactivateOne(i){DATA[i].archived=false;SEL.delete(i);render();updateButtons();updateCounts();updateBadges();}
+function updateCounts(){
+  document.getElementById('cntActive').textContent=DATA.filter(d=>!d.archived).length;
+  document.getElementById('cntArchive').textContent=DATA.filter(d=>d.archived).length;
+}
+function render(){
+  const secs=SECTIONS.filter(s=>activeSecs.has(s.name));
+  const rows=visibleRows();
+  let html="<thead><tr class='grp'><th class='corner'></th>";
+  secs.forEach(s=>html+=`<th colspan='${s.comps.length}'>${s.name}</th>`);
+  html+="</tr><tr class='cmp'><th class='nameh'><label class='selall'><input type='checkbox' id='selAll' onclick='toggleAll(this.checked)'> Operative</label></th>";
+  secs.forEach(s=>s.comps.forEach((c,ci)=>{const sp=ci===s.comps.length-1?' grpsep':'';html+=`<th class='${sp}'><span class='v'>${c}</span></th>`;}));
+  html+="</tr></thead><tbody>";
+  if(rows.length===0){
+    const span=1+secs.reduce((a,s)=>a+s.comps.length,0);
+    html+=`<tr><td colspan='${span}' style='padding:40px;text-align:center;color:#928c82;font-style:italic'>${currentSheet==='archive'?'No archived operatives.':'No operatives match.'}</td></tr>`;
+  }
+  rows.forEach(({d,i:di})=>{
+    const reBtn=currentSheet==='archive'?`<button class='rebtn' onclick='event.stopPropagation();reactivateOne(${di})'>Reactivate</button>`:'';
+    html+=`<tr><td class='name'><div class='ri'><input type='checkbox' class='rowsel' ${SEL.has(di)?'checked':''} onclick='event.stopPropagation();toggleSel(${di})'><span class='no'>${String(di+1).padStart(2,'0')}</span><div><div class='nm' onclick='openEdit(${di})'>${d.name}</div><div class='rl'>${d.role}</div></div>${reBtn}</div></td>`;
+    secs.forEach(s=>s.comps.forEach((c,ci)=>{const cell=d.cells[c];const sp=ci===s.comps.length-1?' grpsep':'';
+      html+=`<td class='c v-${cell.status}${sp}' onclick='openLb(${JSON.stringify(d.name)},${JSON.stringify(c)},${JSON.stringify(cell)})'><span class='m'>${MARK[cell.status]}</span></td>`;}));
+    html+="</tr>";});
+  html+="</tbody>";
+  document.getElementById('grid').innerHTML=html;
+  updateButtons();
+}
+function openLb(name,comp,cell){
+  if(cell.status==='grey'){if(confirm(name+' holds no '+comp+'. Add it via Ingest?'))openIngest();return;}
+  document.getElementById('lbT').textContent=comp;document.getElementById('lbM').textContent=name+(cell.cardType?' · '+cell.cardType:'');
+  const s=document.getElementById('lbS'),e=document.getElementById('lbE');
+  if(cell.status==='perm'){s.className='stamp ok';s.textContent='No expiry';e.textContent='—';}
+  else if(cell.status==='red'){s.className='stamp red';s.textContent='Lapsed';e.textContent=cell.exp;}
+  else if(cell.status==='amber'){s.className='stamp amber';s.textContent='Expiring';e.textContent=cell.exp;}
+  else{s.className='stamp ok';s.textContent='In date';e.textContent=cell.exp;}
+  document.getElementById('lb').classList.add('show');
+}
+function closeLb(){document.getElementById('lb').classList.remove('show');}
+function openIngest(){document.getElementById('ingest').classList.add('show');}
+function closeIngest(){document.getElementById('ingest').classList.remove('show');}
+function closeM(id){document.getElementById(id).classList.remove('show');}
+
+// ---- Add operative ----
+function openAddOp(){
+  document.getElementById('opName').value='';
+  document.getElementById('opRole').innerHTML=roleOptions('Operative');
+  document.getElementById('addOp').classList.add('show');
+}
+// shared handler: when a role <select> picks "Add new role…", prompt and inject
+function roleSelectChanged(sel){
+  if(sel.value!=='__add')return;
+  const name=addRole(prompt('New role name:'));
+  if(name){sel.innerHTML=roleOptions(name);if(sel.id==='reRole')drawRoleReqs();}
+  else{sel.selectedIndex=0;}
+}
+function saveOp(){
+  const name=document.getElementById('opName').value.trim();
+  if(!name){alert('Enter a name.');return;}
+  const role=document.getElementById('opRole').value;
+  const cells={};allComps().forEach(c=>cells[c]={status:'grey'});
+  DATA.push({name,role,cells,archived:false});
+  closeM('addOp');render();updateCounts();
+  // jump the new row into view
+  const wrap=document.querySelector('.frame');wrap.scrollTop=wrap.scrollHeight;
+}
+
+// ---- Add competency (new column) ----
+function openAddComp(){
+  const sel=document.getElementById('compSec');sel.innerHTML='';
+  SECTIONS.forEach(s=>{const o=document.createElement('option');o.value=s.name;o.textContent=s.name;sel.appendChild(o);});
+  document.getElementById('compName').value='';
+  document.getElementById('addComp').classList.add('show');
+}
+function saveComp(){
+  const name=document.getElementById('compName').value.trim();
+  if(!name){alert('Enter a competency name.');return;}
+  const secName=document.getElementById('compSec').value;
+  const isPerm=document.getElementById('compPerm').value==='perm';
+  const sec=SECTIONS.find(s=>s.name===secName);
+  if(sec.comps.includes(name)){alert('That competency already exists in this section.');return;}
+  sec.comps.push(name);
+  if(isPerm)PERM.add(name);
+  DATA.forEach(d=>{d.cells[name]={status:'grey'};});
+  activeSecs.add(secName);
+  closeM('addComp');renderFilters();render();
+}
+
+// ---- Add section ----
+function openAddSec(){document.getElementById('secName').value='';document.getElementById('addSec').classList.add('show');}
+function saveSec(){
+  const name=document.getElementById('secName').value.trim();
+  if(!name){alert('Enter a section name.');return;}
+  if(SECTIONS.some(s=>s.name===name)){alert('A section with that name already exists.');return;}
+  SECTIONS.push({name,comps:[]});
+  activeSecs.add(name);
+  closeM('addSec');renderFilters();render();
+}
+
+// ---- Arrange (drag & drop sections + competencies) ----
+function openArrange(){drawArrange();document.getElementById('arrange').classList.add('show');}
+function closeArrange(){closeM('arrange');renderFilters();render();}
+function drawArrange(){
+  const body=document.getElementById('arrangeBody');
+  body.innerHTML=SECTIONS.map((s,si)=>`
+    <div class="arr-sec" draggable="true" data-sec="${si}">
+      <div class="arr-sechead" data-sechandle="${si}">
+        <span class="grip">⋮⋮</span>
+        <span class="nm">${s.name}</span>
+        <span class="cnt">${s.comps.length} column${s.comps.length===1?'':'s'}</span>
+        <button class="del" onclick="deleteSection(${si})">Remove</button>
+      </div>
+      <div class="arr-chips" data-sec="${si}">
+        ${s.comps.length?s.comps.map((c,ci)=>`
+          <span class="arr-chip" draggable="true" data-sec="${si}" data-comp="${ci}">
+            <span class="grip">⋮⋮</span>${c}${PERM.has(c)?'<span class="tag">no expiry</span>':''}
+          </span>`).join(''):'<span class="arr-empty">Empty — drop a column here</span>'}
+      </div>
+    </div>`).join('');
+  bindArrangeDnD();
+}
+function deleteSection(si){
+  const s=SECTIONS[si];
+  if(s.comps.length){alert('Move or delete this section\u2019s columns first, then remove the empty section.');return;}
+  if(!confirm(`Remove the empty section \u201c${s.name}\u201d?`))return;
+  SECTIONS.splice(si,1);drawArrange();
+}
+let dragKind=null,dragSec=null,dragComp=null;
+function bindArrangeDnD(){
+  // section drag
+  document.querySelectorAll('.arr-sec').forEach(secEl=>{
+    secEl.addEventListener('dragstart',e=>{
+      // only start a SECTION drag if grabbing the header (not a chip)
+      if(e.target.closest('.arr-chip')) return;
+      dragKind='sec';dragSec=+secEl.dataset.sec;secEl.classList.add('dragging');
+      e.stopPropagation();e.dataTransfer.effectAllowed='move';
+    });
+    secEl.addEventListener('dragend',()=>{clearMarks();});
+    secEl.addEventListener('dragover',e=>{
+      if(dragKind!=='sec')return;e.preventDefault();
+      const t=e.currentTarget;const r=t.getBoundingClientRect();
+      const after=(e.clientY-r.top)>r.height/2;
+      clearMarks();t.classList.add(after?'drop-after':'drop-before');
+    });
+    secEl.addEventListener('drop',e=>{
+      if(dragKind!=='sec')return;e.preventDefault();
+      const target=+e.currentTarget.dataset.sec;const r=e.currentTarget.getBoundingClientRect();
+      const after=(e.clientY-r.top)>r.height/2;
+      moveSection(dragSec,target,after);clearMarks();drawArrange();
+    });
+  });
+  // chip drag
+  document.querySelectorAll('.arr-chip').forEach(chip=>{
+    chip.addEventListener('dragstart',e=>{
+      dragKind='comp';dragSec=+chip.dataset.sec;dragComp=+chip.dataset.comp;
+      chip.classList.add('dragging');e.stopPropagation();e.dataTransfer.effectAllowed='move';
+    });
+    chip.addEventListener('dragend',()=>{clearMarks();});
+    chip.addEventListener('dragover',e=>{
+      if(dragKind!=='comp')return;e.preventDefault();e.stopPropagation();
+      const t=e.currentTarget;const r=t.getBoundingClientRect();
+      const after=(e.clientX-r.left)>r.width/2;
+      clearMarks();t.classList.add(after?'drop-after':'drop-before');
+    });
+    chip.addEventListener('drop',e=>{
+      if(dragKind!=='comp')return;e.preventDefault();e.stopPropagation();
+      const toSec=+e.currentTarget.dataset.sec;const toComp=+e.currentTarget.dataset.comp;
+      const r=e.currentTarget.getBoundingClientRect();const after=(e.clientX-r.left)>r.width/2;
+      moveComp(dragSec,dragComp,toSec,toComp+(after?1:0));clearMarks();drawArrange();
+    });
+  });
+  // drop onto a (possibly empty) chip zone
+  document.querySelectorAll('.arr-chips').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{if(dragKind!=='comp')return;e.preventDefault();zone.classList.add('dropzone');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('dropzone'));
+    zone.addEventListener('drop',e=>{
+      if(dragKind!=='comp')return;
+      if(e.target.closest('.arr-chip'))return; // chip handler dealt with it
+      e.preventDefault();const toSec=+zone.dataset.sec;
+      moveComp(dragSec,dragComp,toSec,SECTIONS[toSec].comps.length);
+      zone.classList.remove('dropzone');drawArrange();
+    });
+  });
+}
+function clearMarks(){document.querySelectorAll('.drop-before,.drop-after,.dragging,.dropzone').forEach(el=>el.classList.remove('drop-before','drop-after','dragging','dropzone'));}
+function moveSection(from,to,after){
+  if(from===to)return;
+  const[m]=SECTIONS.splice(from,1);
+  // compute insertion index in the post-splice array
+  let idx=to>from?to-1:to;
+  if(after)idx+=1;
+  idx=Math.max(0,Math.min(SECTIONS.length,idx));
+  SECTIONS.splice(idx,0,m);
+}
+function moveComp(fromSec,fromComp,toSec,toIdx){
+  const src=SECTIONS[fromSec];const dst=SECTIONS[toSec];
+  const name=src.comps[fromComp];
+  if(toSec===fromSec){
+    src.comps.splice(fromComp,1);
+    if(toIdx>fromComp)toIdx--;
+    src.comps.splice(Math.max(0,Math.min(src.comps.length,toIdx)),0,name);
+  }else{
+    if(dst.comps.includes(name)){alert('That section already has a column with this name.');return;}
+    src.comps.splice(fromComp,1);
+    dst.comps.splice(Math.max(0,Math.min(dst.comps.length,toIdx)),0,name);
+  }
+}
+
+function openEdit(i){
+  edIdx=i;const d=DATA[i];
+  document.getElementById('edAv').textContent=(d.name[0]||'')+(d.name.split(' ')[1]?.[0]||'');
+  document.getElementById('edName').textContent=d.name;
+  document.getElementById('edRole').innerHTML=roleOptions(d.role);
+  document.getElementById('edCount').textContent='· '+allComps().length+' competencies';
+  drawEditList();
+  document.getElementById('editOp').classList.add('show');
+}
+function changeOpRole(sel){
+  if(sel.value==='__add'){
+    const name=addRole(prompt('New role name:'));
+    if(name){DATA[edIdx].role=name;sel.innerHTML=roleOptions(name);}
+    else{sel.innerHTML=roleOptions(DATA[edIdx].role);}
+  }else{DATA[edIdx].role=sel.value;}
+  render();updateBadges();
+  if(curView==='roles')renderRoles();
+}
+function drawEditList(openComp){
+  const d=DATA[edIdx];let h='';
+  SECTIONS.forEach(s=>{
+    h+=`<div style="padding:12px 0 4px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:600">${s.name}</div>`;
+    s.comps.forEach(c=>{
+      const cell=d.cells[c]||{status:'grey'};
+      const lbl={white:'In date',grey:'Not held',amber:'Expiring',red:'Lapsed',perm:'No expiry'}[cell.status];
+      const ct=cell.cardType?` · ${cell.cardType}`:'';
+      h+=`<div class='tk'><span class='sw v-${cell.status}'></span><span class='tkn'>${c}${ct}</span>
+        <span class='tke'>${cell.exp||lbl}</span><button class='edit' onclick='editTicket(${JSON.stringify(c)})'>${cell.status==='grey'?'Add':'Update'}</button></div>`;
+      if(openComp===c){
+        const perm=PERM.has(c);
+        const isCSCS=/cscs/i.test(c);
+        const cardTypes=['Labourer (Green)','Skilled Worker (Blue)','Supervisory (Gold)','Manager (Black)','Trainee (Red)','Provisional (Red)','Apprentice','AQP/PQP (White)'];
+        h+=`<div class='sub-form'>
+          ${perm?`<div class='fld' style='margin-bottom:10px'><span class='tag'>No-expiry competency</span></div>`:
+          `<div class='fld'><label>Expiry date (from card reverse)</label><input type='date' id='tkDate' value='${cell.exp||''}'></div>`}
+          ${isCSCS?`<div class='fld'><label>Card type / colour</label><select id='tkCard'>${cardTypes.map(t=>`<option ${cell.cardType===t?'selected':''}>${t}</option>`).join('')}</select></div>`:''}
+          <div class='fld'><label>Front &amp; reverse images</label><input type='file' multiple></div>
+          <div style='display:flex;gap:8px;justify-content:flex-end'>
+            ${cell.status!=='grey'?`<button class='btn dk' onclick='removeTicket(${JSON.stringify(c)})'>Remove</button>`:''}
+            <button class='btn brass' onclick='saveTicket(${JSON.stringify(c)},${perm})'>Save ticket</button>
+          </div></div>`;
+      }
+    });
+  });
+  document.getElementById('edList').innerHTML=h;
+}
+function editTicket(c){drawEditList(c);}
+function saveTicket(c,perm){
+  const d=DATA[edIdx];
+  const cardEl=document.getElementById('tkCard');
+  const cardType=cardEl?cardEl.value:undefined;
+  if(perm){d.cells[c]={status:'perm',exp:null};if(cardType)d.cells[c].cardType=cardType;}
+  else{
+    const v=document.getElementById('tkDate').value;
+    if(!v){alert('Enter the expiry date, or mark the competency as no-expiry.');return;}
+    const months=(new Date(v)-new Date())/(1000*60*60*24*30.4);
+    let st='white';if(months<0)st='red';else if(months<6)st='amber';
+    d.cells[c]={status:st,exp:v};if(cardType)d.cells[c].cardType=cardType;
+  }
+  drawEditList();render();updateBadges();
+}
+function removeTicket(c){DATA[edIdx].cells[c]={status:'grey'};drawEditList();render();}
+
+// ---- Export selected operatives to PDF (one per page) ----
+function placeholderCert(doc,x,y,w,h,label,sub){
+  doc.setDrawColor(207,200,186);doc.setFillColor(241,236,224);
+  doc.rect(x,y,w,h,'FD');
+  // hatch suggestion
+  doc.setTextColor(163,156,142);doc.setFontSize(7);doc.setFont('helvetica','normal');
+  doc.text(label,x+w/2,y+h/2,{align:'center'});
+  doc.setTextColor(84,80,74);doc.setFontSize(8);
+  doc.text(sub,x,y+h+11);
+}
+function exportPDF(){
+  if(SEL.size===0){alert('Tick at least one operative to export.');return;}
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'a4'});
+  const PW=doc.internal.pageSize.getWidth();
+  const M=44;const today=new Date().toISOString().slice(0,10);
+  const STAT={white:'In date',amber:'Expiring \u22646 mo',red:'Lapsed',perm:'No expiry',grey:'Not held'};
+  const RGB={white:[120,120,120],amber:[201,138,53],red:[168,58,44],perm:[120,134,148],grey:[180,180,180]};
+  const idxs=[...SEL].sort((a,b)=>a-b);
+  idxs.forEach((di,pi)=>{
+    if(pi>0)doc.addPage();
+    const d=DATA[di];let y=M;
+    // header bar
+    doc.setFillColor(28,26,23);doc.rect(0,0,PW,70,'F');
+    doc.setFillColor(154,123,63);doc.rect(0,70,PW,3,'F');
+    doc.setTextColor(246,243,236);doc.setFont('times','bold');doc.setFontSize(18);
+    doc.text('Fortuna Civils',M,38);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(169,161,149);
+    doc.text('CERTIFICATE OF COMPETENCY',M,52);
+    doc.setTextColor(169,161,149);doc.setFontSize(8);
+    doc.text('Issued '+today,PW-M,38,{align:'right'});
+    y=98;
+    // operative block
+    doc.setTextColor(28,26,23);doc.setFont('times','normal');doc.setFontSize(20);
+    doc.text(d.name,M,y);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(84,80,74);
+    doc.text(d.role+'  ·  Operative '+String(di+1).padStart(2,'0'),M,y+15);
+    y+=34;
+    // per-section tickets
+    SECTIONS.forEach(s=>{
+      const held=s.comps.filter(c=>(d.cells[c]||{}).status&&d.cells[c].status!=='grey');
+      // section heading
+      if(y>740){doc.addPage();y=M;}
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(120,110,95);
+      doc.text(s.name.toUpperCase(),M,y);
+      doc.setDrawColor(226,221,210);doc.line(M,y+4,PW-M,y+4);
+      y+=16;
+      s.comps.forEach(c=>{
+        const cell=d.cells[c]||{status:'grey'};
+        if(cell.status==='grey')return; // only show held tickets on a client record
+        if(y>770){doc.addPage();y=M;}
+        const col=RGB[cell.status];
+        doc.setFillColor(col[0],col[1],col[2]);doc.rect(M,y-7,9,9,'F');
+        doc.setTextColor(28,26,23);doc.setFont('helvetica','normal');doc.setFontSize(10);
+        doc.text(c,M+16,y);
+        doc.setTextColor(col[0],col[1],col[2]);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+        const right=cell.exp?('Expires '+cell.exp):STAT[cell.status];
+        doc.text(right,PW-M,y,{align:'right'});
+        y+=18;
+      });
+      if(held.length===0){
+        doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(150,144,134);
+        doc.text('None recorded',M+16,y);y+=18;
+      }
+      y+=6;
+    });
+    // card images section
+    if(y>560){doc.addPage();y=M;}
+    y+=4;
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(120,110,95);
+    doc.text('CARD IMAGES',M,y);doc.setDrawColor(226,221,210);doc.line(M,y+4,PW-M,y+4);y+=16;
+    const held=SECTIONS.flatMap(s=>s.comps).filter(c=>(d.cells[c]||{status:'grey'}).status!=='grey').slice(0,4);
+    const cw=(PW-M*2-3*12)/4, ch=cw*0.64;
+    let cx=M;
+    if(held.length===0){
+      doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(150,144,134);
+      doc.text('No card images on file',M,y+12);
+    } else {
+      held.forEach(c=>{
+        if(cx+cw>PW-M){cx=M;y+=ch+26;}
+        placeholderCert(doc,cx,y,cw,ch,'CARD IMAGE',c.length>22?c.slice(0,20)+'…':c);
+        cx+=cw+12;
+      });
+      y+=ch+22;
+    }
+    // footer
+    doc.setFontSize(7);doc.setTextColor(150,144,134);doc.setFont('helvetica','normal');
+    doc.text('Fortuna Civils Ltd · S63 9HN · Competency record generated '+today+'. Colour key: white in date, amber within 6 months, red lapsed.',M,820,{maxWidth:PW-M*2});
+  });
+  const fn=idxs.length===1?DATA[idxs[0]].name.replace(/\s+/g,'_'):`Fortuna_Competency_${idxs.length}_operatives`;
+  doc.save(fn+'.pdf');
+}
+
+// ===== Views: matrix / expiring / roles =====
+let curView='matrix', expWindow=90;
+function setView(v){
+  curView=v;
+  [['matrix','navMatrix'],['expiring','navExpiring'],['roles','navRoles']].forEach(([x,nav])=>{
+    document.getElementById('view-'+x).style.display=x===v?'':'none';
+    document.getElementById(nav).classList.toggle('on',x===v);
+  });
+  if(v==='expiring')renderExpiring();
+  if(v==='roles')renderRoles();
+}
+function setWindow(d){expWindow=d;document.querySelectorAll('#winTabs button').forEach(b=>b.classList.toggle('on',+b.dataset.w===d));renderExpiring();}
+function expiringItems(win){
+  const out=[];
+  DATA.forEach((d,di)=>{if(d.archived)return;
+    allComps().forEach(c=>{const cell=d.cells[c];const dl=daysLeft(cell);
+      if(dl===null)return;
+      if(win===0){if(dl<0)out.push({di,comp:c,cell,days:dl});}
+      else if(dl<=win)out.push({di,comp:c,cell,days:dl});
+    });});
+  return out.sort((a,b)=>a.days-b.days);
+}
+function renderExpiring(){
+  const items=expiringItems(expWindow);
+  const lapsed=items.filter(x=>x.days<0).length;
+  const within30=items.filter(x=>x.days>=0&&x.days<=30).length;
+  const soon=items.filter(x=>x.days>=0).length;
+  document.getElementById('expSummary').innerHTML=`
+    <div class="scard red"><div class="n">${lapsed}</div><div class="l">Lapsed — act now</div></div>
+    <div class="scard amber"><div class="n">${within30}</div><div class="l">Expiring within 30 days</div></div>
+    <div class="scard"><div class="n">${soon}</div><div class="l">Upcoming in window</div></div>`;
+  const rows=items.map(x=>{
+    const d=DATA[x.di];const cls=x.days<0?'red':'amber';
+    const lbl=x.days<0?`Lapsed ${Math.abs(x.days)}d ago`:`${x.days}d left · ${x.cell.exp}`;
+    return `<div class="erow">
+      <span class="sw v-${x.cell.status}"></span>
+      <span class="who" onclick="setView('matrix');openEdit(${x.di})">${d.name}</span>
+      <span class="role">${d.role}</span>
+      <span class="comp">${x.comp}</span>
+      <span class="days ${cls}">${lbl}</span>
+      <button class="act" onclick='openRenew(${x.di},${JSON.stringify(x.comp)})'>Renew</button>
+    </div>`;}).join('');
+  document.getElementById('expList').innerHTML=rows||`<div class="emptyline">Nothing ${expWindow===0?'lapsed':'expiring in this window'}. All clear.</div>`;
+}
+// ===== Role gaps =====
+function roleGap(d){
+  const req=ROLE_REQS[d.role]||[];const missing=[],lapsed=[];
+  req.forEach(c=>{const cell=d.cells[c];
+    if(!cell||cell.status==='grey')missing.push(c);
+    else if(cell.status==='red')lapsed.push(c);});
+  return {missing,lapsed,req};
+}
+function renderRoles(){
+  const cards=DATA.map((d,di)=>({d,di})).filter(x=>!x.d.archived).map(({d,di})=>{
+    const g=roleGap(d);const bad=g.missing.length+g.lapsed.length;
+    const pills=[...g.missing.map(c=>`<span class="gap-pill miss">Missing — ${c}</span>`),
+                 ...g.lapsed.map(c=>`<span class="gap-pill lapsed">Lapsed — ${c}</span>`)].join('');
+    return `<div class="grow-card">
+      <div class="grow-head">
+        <span class="who" onclick="setView('matrix');openEdit(${di})">${d.name}</span>
+        <span class="role">${d.role}</span>
+        ${bad===0?`<span class="ok">✓ Meets role (${g.req.length}/${g.req.length})</span>`:`<span class="bad">${bad} gap${bad>1?'s':''}</span>`}
+      </div>
+      ${bad?`<div class="gap-pills">${pills}</div>`:''}
+    </div>`;}).join('');
+  document.getElementById('roleGaps').innerHTML=cards||`<div class="emptyline">No active operatives.</div>`;
+}
+function openRoleEditor(){
+  const sel=document.getElementById('reRole');sel.innerHTML=roleOptions(ROLE_LIST[0]);
+  drawRoleReqs();document.getElementById('roleEditor').classList.add('show');
+}
+function reRoleChanged(sel){
+  if(sel.value==='__add'){roleSelectChanged(sel);return;}
+  drawRoleReqs();
+}
+function drawRoleReqs(){
+  const role=document.getElementById('reRole').value;const req=new Set(ROLE_REQS[role]||[]);
+  let h='';
+  SECTIONS.forEach(s=>{h+=`<div class="reqsec">${s.name}</div>`;
+    s.comps.forEach(c=>{h+=`<label class="reqrow"><input type="checkbox" ${req.has(c)?'checked':''} onchange='toggleReq(${JSON.stringify(role)},${JSON.stringify(c)},this.checked)'> ${c}</label>`;});});
+  document.getElementById('reReqs').innerHTML=h;
+}
+function toggleReq(role,comp,on){
+  const arr=ROLE_REQS[role]||(ROLE_REQS[role]=[]);
+  const i=arr.indexOf(comp);
+  if(on&&i<0)arr.push(comp);if(!on&&i>=0)arr.splice(i,1);
+}
+function updateBadges(){
+  const expAll=expiringItems(90).length;const lap=expiringItems(0).length;
+  const eb=document.getElementById('navExpBadge');eb.textContent=expAll;
+  eb.className='navbadge'+(expAll===0?' zero':(lap?'':' amber'));
+  let gaps=0;DATA.forEach(d=>{if(d.archived)return;const g=roleGap(d);if(g.missing.length+g.lapsed.length)gaps++;});
+  const rb=document.getElementById('navRoleBadge');rb.textContent=gaps;rb.className='navbadge'+(gaps===0?' zero':'');
+}
+
+// ===== Renew (single + bulk) =====
+let rnTarget=null;
+function setExpFromDate(cell,v){
+  const months=(new Date(v)-new Date())/(1000*60*60*24*30.4);
+  let st='white';if(months<0)st='red';else if(months<6)st='amber';
+  cell.status=st;cell.exp=v;
+}
+function openRenew(di,comp){
+  rnTarget={di,comp};
+  const d=DATA[di];const cell=d.cells[comp];
+  document.getElementById('rnTitle').textContent='Renew ticket';
+  document.getElementById('rnMeta').textContent=`${d.name} · ${comp}`+(cell&&cell.exp?` · currently ${cell.exp}`:'');
+  const dt=new Date();dt.setFullYear(dt.getFullYear()+3);
+  document.getElementById('rnDate').value=dt.toISOString().slice(0,10);
+  document.getElementById('rnNote').textContent='Bumps the expiry and swaps the image in one go.';
+  document.getElementById('renew').classList.add('show');
+}
+function bulkRenew(){
+  if(SEL.size===0){alert('Tick the operatives whose tickets you want to renew.');return;}
+  const items=[];
+  [...SEL].forEach(di=>{const d=DATA[di];if(d.archived)return;
+    allComps().forEach(c=>{const cell=d.cells[c];const dl=daysLeft(cell);
+      if(dl!==null&&dl<=90)items.push({di,comp:c});});});
+  if(items.length===0){alert('None of the selected operatives have tickets expiring within 90 days or lapsed.');return;}
+  rnTarget={bulk:true,items};
+  document.getElementById('rnTitle').textContent='Renew selected — bulk';
+  document.getElementById('rnMeta').textContent=`${items.length} ticket${items.length>1?'s':''} across ${SEL.size} operative${SEL.size>1?'s':''} (expiring \u226490d or lapsed)`;
+  const dt=new Date();dt.setFullYear(dt.getFullYear()+3);
+  document.getElementById('rnDate').value=dt.toISOString().slice(0,10);
+  document.getElementById('rnNote').textContent='Sets the same new expiry on every listed ticket. Use individual Renew for different dates.';
+  document.getElementById('renew').classList.add('show');
+}
+function saveRenew(){
+  const v=document.getElementById('rnDate').value;
+  if(!v){alert('Enter the new expiry date.');return;}
+  if(rnTarget.bulk){rnTarget.items.forEach(({di,comp})=>{const cell=DATA[di].cells[comp];if(cell)setExpFromDate(cell,v);});}
+  else{const cell=DATA[rnTarget.di].cells[rnTarget.comp];if(cell){if(cell.status==='grey')cell.status='white';setExpFromDate(cell,v);}}
+  closeM('renew');render();updateButtons();updateBadges();
+  if(curView==='expiring')renderExpiring();
+}
+
+render();updateButtons();updateCounts();updateBadges();
+</script>
+</body>
+</html>
