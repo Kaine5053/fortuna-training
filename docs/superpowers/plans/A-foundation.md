@@ -269,7 +269,9 @@ insert into tm_settings (key, value) values
   ('confidence_threshold', '0.85'),
   ('sender_address', '"support@fortunacivilsltd.co.uk"'),
   ('invite_ttl_days', '7'),
-  ('retention_years_after_archive', '6')
+  ('retention_years_after_archive', '6'),
+  ('watch_root', '"FORTUNA CIVILS LTD/PERSONELL FILES"'),
+  ('claude_price_per_mtok', '{"in": 3, "out": 15}')
 on conflict (key) do nothing;
 
 -- Seed admins from the existing allowlist (ids resolved from auth.users by email).
@@ -454,6 +456,7 @@ create table if not exists tm_card_types (
   back_features text,
   maps_to_competency_ids uuid[] not null default '{}',
   endorsement_pattern text,
+  code_synonyms jsonb not null default '{}',   -- e.g. {"N202":"360 Excavator ≥10t","A59":"360 Excavator ≥10t"}
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -510,7 +513,7 @@ export interface CardTypeSeed {
   scheme: string; name: string; colour: string | null; what_it_proves: string;
   default_validity_months: number | null; renewal_rule: "renew"|"progression"|"permanent"|"grace";
   grace_months: number; progression_note: string | null; front_features: string; back_features: string;
-  competencies: string[]; endorsement_pattern: string | null; active: boolean;
+  competencies: string[]; endorsement_pattern: string | null; code_synonyms: Record<string, string>; active: boolean;
 }
 export const SCHEMES: SchemeSeed[] = [
   { code: "CSCS", name: "Construction Skills Certification Scheme", issuer: "CSCS Ltd", verify_url: "https://www.cscs.uk.com/cscs-smart-check", verify_method: "smart_check" },
